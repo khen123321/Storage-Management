@@ -1,0 +1,105 @@
+.statistics-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937; /* dark slate */
+  background-color: #f9fafb; /* very light gray */
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+button.generate-summary {
+  background-color: #3f51b5; /* match nav color */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 3px 6px rgba(63,81,181,0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 600;
+}
+
+button.generate-summary:hover {
+  background-color: #2c3ab8;
+  box-shadow: 0 6px 12px rgba(44,58,184,0.6);
+}
+
+.summary-receipt {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+  max-width: 450px;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.7;
+  margin: 0 auto;
+  color: #111827;
+  user-select: none;
+}
+
+.summary-receipt h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  border-bottom: 2px dashed #d1d5db;
+  padding-bottom: 0.75rem;
+  font-size: 1.4rem;
+  color: #3f51b5;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.summary-line.total {
+  margin-top: 12px;
+  font-weight: 700;
+  border-top: 2px dashed #d1d5db;
+  padding-top: 10px;
+}
+
+h2 {
+  text-align: center;
+  color: #374151;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+/* Chart containers for responsiveness */
+.chart-wrapper {
+  background: white;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .chart-wrapper {
+    padding: 1rem;
+  }
+  .statistics-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+  button.generate-summary {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 14px;
+  }
+  .summary-receipt {
+    max-width: 100%;
+    padding: 1rem 1.5rem;
+  }
+}
