@@ -1,0 +1,211 @@
+/* --- PROFESSIONAL BROWN PALETTE: PROFILE --- */
+
+/* CONTAINER */
+.profile-container {
+  background-color: #f8f5f2; /* Warm cream */
+  min-height: 100vh;
+  padding-bottom: 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #3e2723;
+}
+
+/* HEADER WITH COVER PHOTO */
+.profile-header {
+  position: relative;
+  background-color: white;
+  margin-bottom: 80px;
+}
+
+.cover-photo {
+  height: 200px;
+  /* Gradient: Dark Brown to Bronze */
+  background: linear-gradient(to right, #4e342e, #8d6e63);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.profile-avatar-container {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.avatar-circle {
+  width: 120px;
+  height: 120px;
+  background-color: #3e2723; /* Dark Espresso */
+  border: 5px solid white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(93, 64, 55, 0.2);
+}
+
+/* CONTENT LAYOUT */
+.profile-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.profile-identity h1 {
+  margin: 0;
+  color: #2d2420;
+  font-size: 2rem;
+}
+
+.role-badge {
+  background-color: #efebe9;
+  color: #5d4037;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.profile-location {
+  color: #8d6e63;
+  margin-top: 5px;
+}
+
+/* DETAILS CARD */
+.details-card {
+  background: white;
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(93, 64, 55, 0.08);
+  text-align: left;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #efebe9;
+  padding-bottom: 15px;
+}
+
+.card-header-row h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #3e2723;
+}
+
+/* FORM GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.85rem;
+  color: #a1887f; /* Light brown/taupe */
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.display-text {
+  font-size: 1.1rem;
+  color: #3e2723;
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px dashed #d7ccc8;
+}
+
+.bio-text {
+  line-height: 1.6;
+  border-bottom: none;
+  background: #f8f5f2;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* INPUTS */
+input, textarea {
+  padding: 10px 15px;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  color: #3e2723;
+}
+
+input:focus, textarea:focus {
+  border-color: #5d4037; /* Brown focus */
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.1);
+}
+
+/* BUTTONS */
+.edit-btn {
+  background: transparent;
+  color: #5d4037;
+  border: 1px solid #5d4037;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background: #efebe9;
+}
+
+.action-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.save-btn {
+  background: #689f38; /* Olive Green */
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.save-btn:hover { background: #558b2f; }
+
+.cancel-btn {
+  background: #d7ccc8; /* Light Taupe */
+  color: #4e342e;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cancel-btn:hover { background: #a1887f; }
+
+/* Responsive Mobile */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,111 @@
+/* --- PROFESSIONAL BROWN PALETTE: GLOBAL LAYOUT --- */
+
+/* Root app container */
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: #f8f5f2; /* Warm cream background to match screens */
+  color: #3e2723;      /* Espresso text color */
+  margin: 0;
+  padding: 0;
+}
+
+/* Loading screen */
+.loading {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.8rem;
+  color: #5d4037;      /* Primary Brown */
+  font-weight: 600;
+  background: #f8f5f2; /* Warm cream */
+}
+
+/* Navigation bar container */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #4e342e; /* Deep Espresso/Dark Brown */
+  padding: 12px 24px;
+  box-shadow: 0 4px 8px rgba(93, 64, 55, 0.25); /* Brown shadow */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #3e2723;
+}
+
+/* Navigation links container */
+.nav-links {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+/* Individual nav links */
+.nav-link {
+  color: #efebe9; /* Off-white / Cream text */
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  background-color: #6d4c41; /* Lighter Bronze/Brown on hover */
+  outline: none;
+  color: #ffffff;
+}
+
+/* Logout button */
+.logout-btn {
+  background-color: #bf360c; /* Burnt Rust/Orange (Professional Warning Color) */
+  border: none;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.logout-btn:hover,
+.logout-btn:focus {
+  background-color: #d84315; /* Lighter Rust on hover */
+  outline: none;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .nav-links {
+    gap: 10px;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .nav-link {
+    font-size: 1rem;
+    padding: 10px;
+    background-color: rgba(255,255,255, 0.05); /* Slight highlight for mobile touch targets */
+    text-align: center;
+  }
+
+  .logout-btn {
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 10px;
+  }
+}

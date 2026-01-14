@@ -1,0 +1,190 @@
+/* --- PROFESSIONAL BROWN PALETTE: MAIN DASHBOARD --- */
+
+/* Container - Warm cream background */
+.dashboard-container {
+  padding: 40px;
+  background-color: #f8f5f2; /* Warm cream */
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #3e2723; /* Dark espresso text */
+}
+
+/* Header */
+.header-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.dashboard-title {
+  color: #2d2420; /* Very dark brown */
+  margin-bottom: 30px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Link Card */
+.link-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.1); /* Soft brown shadow */
+  display: inline-block;
+  max-width: 600px;
+  width: 100%;
+  border-top: 4px solid #5d4037; /* Brown accent top */
+}
+
+.link-card h3 {
+  color: #5d4037;
+  margin-top: 0;
+}
+
+.copy-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.link-input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  border: 1px solid #d7ccc8; /* Warm gray border */
+  border-radius: 6px;
+  background-color: #fff;
+  color: #5d4037;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+/* Primary Action Button (Copy) - Warm Earth Green */
+.copy-button {
+  padding: 10px 20px;
+  background-color: #689f38; /* Warm olive green */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 120px;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: #558b2f; /* Darker olive */
+}
+
+.test-link {
+  font-size: 0.85rem;
+  color: #8d6e63; /* Muted bronze/brown link */
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
+}
+.test-link:hover {
+  text-decoration: underline;
+  color: #5d4037;
+}
+
+/* --- CONTROLS SECTION --- */
+.controls-section {
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-input {
+  padding: 12px 20px;
+  width: 300px;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  outline: none;
+}
+.search-input:focus {
+  border-color: #5d4037; /* Brown focus border */
+  box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
+}
+
+.refresh-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.last-updated {
+  font-size: 0.85rem;
+  color: #8d6e63; /* Muted brown text */
+}
+
+/* Secondary Action Button (Refresh) - Primary Brown */
+.refresh-button {
+  padding: 10px 20px;
+  background-color: #5d4037; /* Primary brown */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.refresh-button:hover {
+  background-color: #4a342e; /* Darker brown */
+}
+
+/* --- TABLE SECTION --- */
+.table-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(93, 64, 55, 0.08);
+  border: 1px solid #efebe9;
+}
+
+.table-section h2 {
+  color: #5d4037;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+/* Table Header - Deep Brown */
+.orders-table th {
+  background-color: #4a342e; /* Deep espresso header */
+  color: #efebe9; /* Off-white text */
+  padding: 15px;
+  text-align: left;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.orders-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #efebe9;
+  color: #3e2723;
+}
+
+/* Row Hover - Very pale brown */
+.orders-table tr:hover {
+  background-color: #f2ece6; 
+}
+
+.loading-text, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #8d6e63;
+}
