@@ -1,147 +1,225 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../firebase";
-import "./LoginScreen.css";
+import React, { useEffect, useState, useMemo } from 'react';
+import Papa from 'papaparse';
+import './MainScreen.css';
 
-// Icons remain the same...
-const EyeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-);
-const EyeOffIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.9 3.23"/><path d="M1.78 1.78 22.22 22.22"/><path d="M2 12s3 7 10 7a10.43 10.43 0 0 0 2.82-.43"/></svg>
-);
+const Mainscreen = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All"); // New Filter State
+  const [lastUpdated, setLastUpdated] = useState("");
+  const [copyFeedback, setCopyFeedback] = useState("Copy Link");
+  
+  // State to store statuses locally
+  const [statusMap, setStatusMap] = useState({});
 
-function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const formLink = "https://forms.gle/c8dWpwUKuonCpfSX8";
+  const sheetCSVLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQh9F3shvo88vrBvqEbhOcKkaIJgjFTHN_vjzTlR-bxlFPZBRMaf069NsQEtPel7C68MDR7p_6zzOsI/pub?gid=1558447114&single=true&output=csv"; 
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccessMsg("");
-    
-    if(!email || !password) {
-      setError("Please fill in both email and password.");
-      return;
+  useEffect(() => {
+    const savedStatuses = localStorage.getItem("order_statuses");
+    if (savedStatuses) {
+      setStatusMap(JSON.parse(savedStatuses));
     }
+  }, []);
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(formLink).then(() => {
+      setCopyFeedback("Copied! ✅");
+      setTimeout(() => setCopyFeedback("Copy Link"), 2000);
+    });
+  };
+
+  const fetchData = () => {
     setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      console.error(err.code);
-      if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
-        setError("Invalid email or password.");
-      } else if (err.code === "auth/too-many-requests") {
-        setError("Too many failed attempts. Please try again later.");
-      } else {
-        setError("Login failed. Please check your connection.");
+    Papa.parse(sheetCSVLink, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const newestFirst = results.data.reverse();
+        setOrders(newestFirst);
+        setLoading(false);
+        setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      },
+      error: (err) => {
+        console.error("Error fetching data:", err);
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleStatusChange = (timestamp, newStatus) => {
+    const updatedMap = { ...statusMap, [timestamp]: newStatus };
+    setStatusMap(updatedMap);
+    localStorage.setItem("order_statuses", JSON.stringify(updatedMap));
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'Approved': return 'status-approved';
+      case 'Declined': return 'status-declined';
+      default: return 'status-pending';
     }
   };
 
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError("Please enter your email address first to reset password.");
-      return;
-    }
-    setLoading(true);
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setSuccessMsg("Password reset email sent! Check your inbox.");
-      setError("");
-    } catch (err) {
-      setError("Failed to send reset email: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // --- NEW: Calculate Stats Dynamically ---
+  const stats = useMemo(() => {
+    const total = orders.length;
+    let pending = 0;
+    let approved = 0;
+    let declined = 0;
+
+    orders.forEach(order => {
+      const status = statusMap[order.Timestamp] || 'Pending';
+      if (status === 'Pending') pending++;
+      if (status === 'Approved') approved++;
+      if (status === 'Declined') declined++;
+    });
+
+    return { total, pending, approved, declined };
+  }, [orders, statusMap]);
+
+  // --- UPDATED: Filtering Logic (Text + Status) ---
+  const filteredOrders = orders.filter((row) => {
+    // 1. Text Search
+    const rowValues = Object.values(row).join(" ").toLowerCase();
+    const matchesSearch = rowValues.includes(searchTerm.toLowerCase());
+
+    // 2. Status Filter
+    const currentStatus = statusMap[row['Timestamp']] || 'Pending';
+    const matchesStatus = statusFilter === "All" || currentStatus === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <div className="dashboard-container">
+      
+      {/* HEADER SECTION */}
+      <div className="header-section">
+        <h1 className="dashboard-title">Order Dashboard</h1>
         
-        {/* HEADER SECTION */}
-        <div className="login-header">
-          {/* Using /favicon.ico works because it is in the public folder */}
-          <img src="/favicon.ico" alt="App Logo" className="login-logo" />
-          <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">Sign in to manage your inventory</p>
-        </div>
-
-        {/* FORM SECTION */}
-        <form onSubmit={handleLogin} className="login-form" noValidate>
-          
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="name@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              className={error ? "input-error" : ""}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="password-wrapper">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-                className={error ? "input-error" : ""}
-              />
-              <button
-                type="button"
-                className="toggle-password-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex="-1"
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+        {/* STATS CARDS (New Feature) */}
+        {!loading && (
+          <div className="stats-grid">
+            <div className="stat-card">
+              <span className="stat-label">Total Orders</span>
+              <span className="stat-value">{stats.total}</span>
+            </div>
+            <div className="stat-card card-pending">
+              <span className="stat-label">Pending</span>
+              <span className="stat-value">{stats.pending}</span>
+            </div>
+            <div className="stat-card card-approved">
+              <span className="stat-label">Approved</span>
+              <span className="stat-value">{stats.approved}</span>
+            </div>
+            {/* Optional Link Card Button embedded in header */}
+            <div className="stat-card action-card">
+              <span className="stat-label">New Order?</span>
+              <button onClick={handleCopyLink} className="mini-copy-btn">
+                🔗 {copyFeedback}
               </button>
             </div>
           </div>
+        )}
+      </div>
 
-          <div className="form-actions">
-            <button 
-              type="button" 
-              onClick={handleForgotPassword}
-              className="forgot-password-link"
-            >
-              Forgot Password?
-            </button>
+      {/* TABLE SECTION */}
+      <div className="table-section">
+        <div className="table-header-row">
+          <div className="title-group">
+            <h2>Orders List</h2>
+            {lastUpdated && <span className="last-updated">Updated: {lastUpdated}</span>}
           </div>
 
-          <button
-            type="submit"
-            className="login-button"
-            disabled={loading}
-          >
-            {loading ? <span className="loader"></span> : "Sign In"}
-          </button>
+          <div className="table-actions">
+            {/* Status Filter Dropdown */}
+            <select 
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All">Show All</option>
+              <option value="Pending">⏳ Pending</option>
+              <option value="Approved">✅ Approved</option>
+              <option value="Declined">❌ Declined</option>
+            </select>
 
-          {/* ALERTS */}
-          {error && <div className="alert alert-error">{error}</div>}
-          {successMsg && <div className="alert alert-success">{successMsg}</div>}
+            <input 
+              type="text" 
+              placeholder="🔍 Search details..." 
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            
+            <button onClick={fetchData} className="refresh-button">↻</button>
+          </div>
+        </div>
 
-        </form>
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Syncing with Google Sheets...</p>
+          </div>
+        ) : filteredOrders.length > 0 ? (
+          <div className="table-wrapper">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  {Object.keys(orders[0]).map((header, index) => (
+                    <th key={index}>{header}</th>
+                  ))}
+                  <th className="sticky-col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders.map((row, rowIndex) => {
+                  const rowId = row['Timestamp']; 
+                  const currentStatus = statusMap[rowId] || 'Pending';
+
+                  return (
+                    <tr key={rowIndex} className="fade-in-row">
+                      {Object.values(row).map((val, colIndex) => (
+                        <td key={colIndex}>{val}</td>
+                      ))}
+                      
+                      <td className="sticky-col">
+                        <select 
+                          className={`status-select ${getStatusColor(currentStatus)}`}
+                          value={currentStatus}
+                          onChange={(e) => handleStatusChange(rowId, e.target.value)}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Declined">Declined</option>
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <p>No orders found matching your filters.</p>
+            {statusFilter !== "All" && (
+              <button className="clear-filter-btn" onClick={() => setStatusFilter("All")}>
+                Clear Filters
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
-export default LoginScreen;
+export default Mainscreen;

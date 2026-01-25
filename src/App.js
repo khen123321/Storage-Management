@@ -12,7 +12,7 @@ import Profilescreen from "./screens/Profilescreen";
 import StatisticsScreen from "./screens/StatisticsScreen";
 import LoginScreen from "./screens/LoginScreen";
 import { auth } from "./firebase";
-import "./App.css";  // make sure you import CSS
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,30 +35,31 @@ function App() {
         {user && (
           <nav className="navbar">
             <div className="nav-links">
-              <Link to="/" className="nav-link">
-                Main
-              </Link>
-              <Link to="/statistics" className="nav-link">
-                Statistics
-              </Link>
-              <Link to="/profile" className="nav-link">
-                Profile
-              </Link>
+              <Link to="/" className="nav-link">Main</Link>
+              <Link to="/statistics" className="nav-link">Statistics</Link>
+              <Link to="/profile" className="nav-link">Profile</Link>
             </div>
             <button onClick={() => auth.signOut()} className="logout-btn">
               Logout
             </button>
           </nav>
         )}
-        <Routes>
-          <Route path="/login" element={!user ? <LoginScreen /> : <Navigate to="/" />} />
-          <Route path="/" element={user ? <Mainscreen /> : <Navigate to="/login" />} />
-          <Route path="/profile" element={user ? <Profilescreen /> : <Navigate to="/login" />} />
-          <Route
-            path="/statistics"
-            element={user ? <StatisticsScreen /> : <Navigate to="/login" />}
-          />
-        </Routes>
+
+        {/* Content Wrapper */}
+        <div className="main-content">
+          <Routes>
+            <Route path="/login" element={!user ? <LoginScreen /> : <Navigate to="/" />} />
+            <Route path="/" element={user ? <Mainscreen /> : <Navigate to="/login" />} />
+            <Route path="/profile" element={user ? <Profilescreen /> : <Navigate to="/login" />} />
+            <Route path="/statistics" element={user ? <StatisticsScreen /> : <Navigate to="/login" />} />
+          </Routes>
+        </div>
+
+        {/* Footer Section */}
+        <footer className="app-footer">
+          <p>© 2025 Order Management System. All rights reserved.</p>
+        </footer>
+
       </Router>
     </div>
   );
