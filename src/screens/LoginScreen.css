@@ -1,179 +1,261 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+:root {
+  /* Brand Colors */
+  --primary: #3e2723;
+  --primary-hover: #5d4037;
+  --bg-gradient: radial-gradient(circle at top left, #fff 0%, #f0ebe6 100%);
+  --surface: #ffffff;
+  
+  /* Text */
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  
+  /* Styling Tokens */
+  --radius-input: 12px;
+  --radius-card: 20px;
+  --shadow-card: 0 10px 40px -10px rgba(0,0,0,0.08);
+  --shadow-focus: 0 0 0 4px rgba(62, 39, 35, 0.15);
+  --input-height: 52px; /* Taller inputs for mobile touch */
+}
 
-/* --- 1. Layout & Background --- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   2. CONTAINER LAYOUT (Flexbox)
+   ========================================= */
 .login-container {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  /* BEIGE BACKGROUND */
-  background-color: #f9f8f4; 
-  
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 20px;
+  background: var(--bg-gradient);
+  padding: 16px; /* Safe area for mobile edges */
 }
 
-/* --- 2. The Card --- */
+/* =========================================
+   3. RESPONSIVE CARD DESIGN
+   ========================================= */
 .login-card {
-  background: #ffffff;
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
-  border-radius: 12px;
-  /* Soft shadow to lift card off the beige background */
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  background: var(--surface);
+  width: 100%; /* Default to full width on mobile */
+  
+  /* Mobile Spacing */
+  padding: 32px 24px; 
+  
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  
+  /* Animation */
+  opacity: 0;
+  animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* --- 3. Header & Logo --- */
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.login-logo {
-  width: 64px; /* Adjust this if your logo looks too small/big */
-  height: 64px;
-  margin-bottom: 1rem;
+/* =========================================
+   4. LOGO & TYPOGRAPHY
+   ========================================= */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.logo-image {
+  width: 56px;
+  height: 56px;
   object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.06));
 }
 
-.login-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
+.header-text {
+  text-align: center;
+  margin-bottom: 32px;
 }
 
-.login-subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+.header-text h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
 }
 
-/* --- 4. Inputs --- */
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+.header-text p {
   font-size: 0.95rem;
-  transition: all 0.2s;
-  box-sizing: border-box;
-  background-color: #f9fafb;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #6F4E37; /* Brown border on focus */
-  box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.1);
-  background-color: #fff;
+/* =========================================
+   5. FORM ELEMENTS
+   ========================================= */
+.form-group {
+  margin-bottom: 20px;
 }
 
-.input-error {
-  border-color: #ef4444 !important;
-  background-color: #fef2f2 !important;
+.form-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  margin-left: 2px;
 }
 
-/* --- 5. Password Eye Icon --- */
-.password-wrapper {
+.input-wrapper {
   position: relative;
-}
-
-.password-wrapper input {
-  padding-right: 40px;
-}
-
-.toggle-password-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #9ca3af;
   display: flex;
   align-items: center;
 }
 
-.toggle-password-btn:hover {
-  color: #4b5563;
-}
-
-/* --- 6. Buttons & Links --- */
-.form-actions {
+/* Input Icons */
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: #9ca3af;
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1.5rem;
+  pointer-events: none;
+  z-index: 2;
+  transition: color 0.2s;
 }
 
-.forgot-password-link {
+.form-input {
+  width: 100%;
+  height: var(--input-height); /* Fixed height for touch consistency */
+  padding: 0 16px 0 48px; /* Left padding makes room for icon */
+  font-size: 1rem; /* 16px prevents iOS zoom on focus */
+  color: var(--text-main);
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: var(--radius-input);
+  transition: all 0.2s ease;
+  appearance: none; /* Removes default iOS styling */
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-input:focus ~ .input-icon {
+  color: var(--primary);
+}
+
+/* Password Toggle Button */
+.password-toggle {
+  position: absolute;
+  right: 8px;
   background: none;
   border: none;
-  color: #6F4E37; /* Coffee Brown link */
-  font-size: 0.875rem;
-  font-weight: 500;
   cursor: pointer;
-  padding: 0;
+  padding: 8px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
 }
 
-.forgot-password-link:hover {
-  text-decoration: underline;
-  color: #4a3424;
+.password-toggle:hover {
+  color: var(--primary);
 }
 
-.login-button {
-  width: 100%;
-  background-color: #6F4E37; /* COFFEE BROWN BUTTON */
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.login-button:hover {
-  background-color: #5D4037; /* Darker brown on hover */
-}
-
-.login-button:disabled {
-  background-color: #a89f91;
-  cursor: not-allowed;
-}
-
-/* --- 7. Alerts --- */
-.alert {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-.alert-error {
-  background-color: #fef2f2;
+/* =========================================
+   6. ERROR ALERT
+   ========================================= */
+.error-alert {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: #991b1b;
-  border: 1px solid #fecaca;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: shake 0.4s ease-in-out;
 }
 
-.alert-success {
-  background-color: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* =========================================
+   7. BUTTONS
+   ========================================= */
+.btn-signin {
+  width: 100%;
+  height: var(--input-height);
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-input);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.btn-signin:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 12px rgba(62, 39, 35, 0.15);
+}
+
+.btn-signin:active {
+  transform: translateY(0);
+}
+
+/* =========================================
+   8. MEDIA QUERIES (The Fix)
+   ========================================= */
+
+/* TABLET & DESKTOP (Width > 768px) */
+@media (min-width: 768px) {
+  .login-card {
+    /* Locks the width so it doesn't look stretched on desktop */
+    max-width: 460px;
+    
+    /* Adds more breathing room inside the card */
+    padding: 48px 48px;
+  }
+
+  .header-text h1 {
+    font-size: 2rem;
+  }
+}
+
+/* MOBILE (Width < 480px) */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 12px;
+  }
+  
+  .login-card {
+    /* Maximizes width on small phones */
+    width: 100%;
+    border: none; /* Cleaner look on small screens */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Softer shadow */
+  }
 }

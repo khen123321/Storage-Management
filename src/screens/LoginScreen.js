@@ -1,225 +1,117 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import Papa from 'papaparse';
-import './MainScreen.css';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebase'; 
+import './LoginScreen.css';
 
-const Mainscreen = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All"); // New Filter State
-  const [lastUpdated, setLastUpdated] = useState("");
-  const [copyFeedback, setCopyFeedback] = useState("Copy Link");
+const LoginScreen = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); 
   
-  // State to store statuses locally
-  const [statusMap, setStatusMap] = useState({});
+  const navigate = useNavigate();
 
-  const formLink = "https://forms.gle/c8dWpwUKuonCpfSX8";
-  const sheetCSVLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQh9F3shvo88vrBvqEbhOcKkaIJgjFTHN_vjzTlR-bxlFPZBRMaf069NsQEtPel7C68MDR7p_6zzOsI/pub?gid=1558447114&single=true&output=csv"; 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-  useEffect(() => {
-    const savedStatuses = localStorage.getItem("order_statuses");
-    if (savedStatuses) {
-      setStatusMap(JSON.parse(savedStatuses));
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(''); 
+
+    if(!email || !password) {
+      setError("Please enter both email and password.");
+      return;
     }
-  }, []);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(formLink).then(() => {
-      setCopyFeedback("Copied! ✅");
-      setTimeout(() => setCopyFeedback("Copy Link"), 2000);
-    });
-  };
-
-  const fetchData = () => {
-    setLoading(true);
-    Papa.parse(sheetCSVLink, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const newestFirst = results.data.reverse();
-        setOrders(newestFirst);
-        setLoading(false);
-        setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      },
-      error: (err) => {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      }
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleStatusChange = (timestamp, newStatus) => {
-    const updatedMap = { ...statusMap, [timestamp]: newStatus };
-    setStatusMap(updatedMap);
-    localStorage.setItem("order_statuses", JSON.stringify(updatedMap));
-  };
-
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Approved': return 'status-approved';
-      case 'Declined': return 'status-declined';
-      default: return 'status-pending';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/'); 
+    } catch (err) {
+      console.error("Login Error:", err);
+      setError("Access Denied. Please contact IT Support.");
     }
   };
-
-  // --- NEW: Calculate Stats Dynamically ---
-  const stats = useMemo(() => {
-    const total = orders.length;
-    let pending = 0;
-    let approved = 0;
-    let declined = 0;
-
-    orders.forEach(order => {
-      const status = statusMap[order.Timestamp] || 'Pending';
-      if (status === 'Pending') pending++;
-      if (status === 'Approved') approved++;
-      if (status === 'Declined') declined++;
-    });
-
-    return { total, pending, approved, declined };
-  }, [orders, statusMap]);
-
-  // --- UPDATED: Filtering Logic (Text + Status) ---
-  const filteredOrders = orders.filter((row) => {
-    // 1. Text Search
-    const rowValues = Object.values(row).join(" ").toLowerCase();
-    const matchesSearch = rowValues.includes(searchTerm.toLowerCase());
-
-    // 2. Status Filter
-    const currentStatus = statusMap[row['Timestamp']] || 'Pending';
-    const matchesStatus = statusFilter === "All" || currentStatus === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
 
   return (
-    <div className="dashboard-container">
-      
-      {/* HEADER SECTION */}
-      <div className="header-section">
-        <h1 className="dashboard-title">Order Dashboard</h1>
+    <div className="login-container">
+      <div className="login-card">
         
-        {/* STATS CARDS (New Feature) */}
-        {!loading && (
-          <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-label">Total Orders</span>
-              <span className="stat-value">{stats.total}</span>
-            </div>
-            <div className="stat-card card-pending">
-              <span className="stat-label">Pending</span>
-              <span className="stat-value">{stats.pending}</span>
-            </div>
-            <div className="stat-card card-approved">
-              <span className="stat-label">Approved</span>
-              <span className="stat-value">{stats.approved}</span>
-            </div>
-            {/* Optional Link Card Button embedded in header */}
-            <div className="stat-card action-card">
-              <span className="stat-label">New Order?</span>
-              <button onClick={handleCopyLink} className="mini-copy-btn">
-                🔗 {copyFeedback}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* TABLE SECTION */}
-      <div className="table-section">
-        <div className="table-header-row">
-          <div className="title-group">
-            <h2>Orders List</h2>
-            {lastUpdated && <span className="last-updated">Updated: {lastUpdated}</span>}
-          </div>
-
-          <div className="table-actions">
-            {/* Status Filter Dropdown */}
-            <select 
-              className="filter-select"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="All">Show All</option>
-              <option value="Pending">⏳ Pending</option>
-              <option value="Approved">✅ Approved</option>
-              <option value="Declined">❌ Declined</option>
-            </select>
-
-            <input 
-              type="text" 
-              placeholder="🔍 Search details..." 
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            
-            <button onClick={fetchData} className="refresh-button">↻</button>
+        {/* Logo Section */}
+        <div className="logo-section">
+          <div className="logo-wrapper">
+            <img src="/favicon.ico" alt="Logo" className="logo-image" />
           </div>
         </div>
 
-        {loading ? (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Syncing with Google Sheets...</p>
-          </div>
-        ) : filteredOrders.length > 0 ? (
-          <div className="table-wrapper">
-            <table className="orders-table">
-              <thead>
-                <tr>
-                  {Object.keys(orders[0]).map((header, index) => (
-                    <th key={index}>{header}</th>
-                  ))}
-                  <th className="sticky-col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.map((row, rowIndex) => {
-                  const rowId = row['Timestamp']; 
-                  const currentStatus = statusMap[rowId] || 'Pending';
+        {/* Text Section */}
+        <div className="header-text">
+          <h1>Welcome Back</h1>
+          <p>Sign in to manage your inventory</p>
+        </div>
 
-                  return (
-                    <tr key={rowIndex} className="fade-in-row">
-                      {Object.values(row).map((val, colIndex) => (
-                        <td key={colIndex}>{val}</td>
-                      ))}
-                      
-                      <td className="sticky-col">
-                        <select 
-                          className={`status-select ${getStatusColor(currentStatus)}`}
-                          value={currentStatus}
-                          onChange={(e) => handleStatusChange(rowId, e.target.value)}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Approved">Approved</option>
-                          <option value="Declined">Declined</option>
-                        </select>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <form onSubmit={handleLogin} className="login-form">
+          {/* Error Alert */}
+          {error && (
+            <div className="error-alert">
+              <div className="error-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Email Input */}
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </span>
+              <input 
+                type="email" 
+                id="email" 
+                className="form-input" 
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
           </div>
-        ) : (
-          <div className="empty-state">
-            <p>No orders found matching your filters.</p>
-            {statusFilter !== "All" && (
-              <button className="clear-filter-btn" onClick={() => setStatusFilter("All")}>
-                Clear Filters
+
+          {/* Password Input */}
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">Password</label>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </span>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                id="password" 
+                className="form-input" 
+                placeholder="Enter your password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type="button" className="password-toggle" onClick={togglePasswordVisibility}>
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                )}
               </button>
-            )}
+            </div>
           </div>
-        )}
+
+          <button type="submit" className="btn-signin">Sign In</button>
+        </form>
       </div>
     </div>
   );
 };
 
-export default Mainscreen;
+export default LoginScreen;
